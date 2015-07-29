@@ -90,6 +90,7 @@ python trainClassifier.py combinedTrainingSetsTennessenEuro/ classifiers/tenness
 
 #first, we have to combine the two parts of the sample population's fasta file (which was too large for github), then unzip
 cat test2LCTpop_CEU.fa.gz.partaa test2LCTpop_CEU.fa.gz.partab > test2LCTpop_CEU.fa.gz
+rm test2LCTpop_CEU.fa.gz.partaa test2LCTpop_CEU.fa.gz.partab
 gunzip test2LCTpop_CEU.fa.gz
 
 # pgStatsBed calculates summary statistics in individual subwindows
