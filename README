@@ -1,0 +1,45 @@
+This directory contains all of the code necessary to run the Soft/Hard Inference through Classification tool (S/HIC). Briefly, this tool uses an Extra-Trees classifier (Geurts et al. 2005: http://www.montefiore.ulg.ac.be/~ernst/uploads/news/id63/extremely-randomized-trees.pdf) to classify genomic windows as one of five different modes of evolution:
+1) Having experienced a recent hard selective sweep (i.e. positive selection resulting in the fixation of a new beneficial mutation)
+2) Being linked to a region experiencing a recent hard sweep
+3) Having experienced a recent sweep soft sweep (i.e. the fixation of a previously neutral standing variant, that later began to confer a fitness advantage)
+4) Being linked to a soft sweep
+5) Evolving neutrally
+
+By explicitly handling regions linked to selective sweeps (classes 2 and 4), this tool can mitigate the "soft shoulder" problem of detecting false soft sweeps near hard sweeps (Schrider et al. 2015; http://www.genetics.org/content/200/1/267.short), and also narrow down the target of selection to a smaller candidate window. This is done by examining spatial patterns of variation across a large genomic window in order to infer the mode of selection in the center of the window. If there is a strong signature of selection near the center of the window, S/HIC will classify that region as a selective sweep. However, if there is stronger evidence for selection near the borders of the large window, the center of the window will instead be classified as linked to a recent sweep. The "features" that S/HIC uses to perform this classification are the relative values of various population genomic summary statistics across 11 subwindows (see the S/HIC paper for more detail), where the central subwindow is the one whose class we wish to infer. Before it can be applied to a population sample of genomes, this classifier must be trained on simulated data.
+
+In order to run S/HIC, the user will need several python packages, including scikit-learn (http://scikit-learn.org/stable/), scipy (http://www.scipy.org/), and numpy (http://www.numpy.org/). The simplest way to get all of this up and running is to install Anaconda (https://store.continuum.io/cshop/anaconda/), which contains these and many more python packages and is very easy to install. The S/HIC pipeline should then work on any Linux system. It has not yet been tested on OS X.
+
+Because S/HIC requires training prior to performing classifications, running the software is a multi-step process. Below, we outline each step, and in shIC_pipeline.sh we describe the whole process in greater detail, with a complete example run. Here are the steps of the S/HIC pipeline:
+
+1) Build C tools needed for calculating summary statistics: Two different tools that calculate statistics used by S/HIC must be installed (requires the Gnu C Compiler)
+2) Generate training feature vectors from simulations: Statistics summarizing patterns of variation within each simulated genomic window must be calculated from training data.
+3) The feature vectors generated above are merged into training sets for five different classes: Hard, Hard-linked, Soft, Soft-linked, and Neutral.
+4) Train S/HIC.
+5) Calculate summary statistics in genomic windows we wish to classify.
+6) Combine the summary statistics from individual genomic subwindows into feature vectors as described in the S/HIC paper.
+XX untested XX 7) Classify genomic data.
+
+Not all of these steps are mandatory: if you have generated your own feature vectors from training data, then you can proceed to step 3. The training feature vector format is described below. (You could also use one of two training set directories included in S/HIC code: combinedTrainingSetsTennessenEuro and combinedTrainingSetsEquib . These are the European-demography and equilibrium-demography training sets used in the S/HIC paper.) Similarly, if you have calculated summary statistics from genomic data, then step 5 can be skipped as well, provided these statistics are listed in the proper format (also described below). Note that this pipeline also assumes that you have already simulated training data (with ms-style output), which can be done using discoal_multipop (https://github.com/kern-lab/discoal_multipop) or the simulator of your choice. The requirements for simulated data and their file names are described in the comments above step 2 in shIC_pipeline.sh . If you wish to simulate your own training set with discoal_multipop, when simulating selective sweeps you must use the -x option to specify the location of the sweeps in order to generate data for both sweep classes as well as the two "linked" classes. Example command lines for simulating neutral datasets under several demographic scenarios are listed in Table S1 in the S/HIC paper. See the discoal_multipop manual in its github repository for more information.
+
+Format for training feature vector files (input to step 3):
+
+This file is tab-delimited. Each column represents a feature (i.e. the relative value of a summary statistic in one subwindow), and each row is the entire feature vector for a single training example. If we are using n subwindows, and m statistics, then there must be n*m columns. The header name for each feature is of the form <statName>_win<i>, where <statName> is replaced by the name of the statistic, and <i> is replaced by the zero-based index of the current subwindow. For example, if the first summary statistic is pi (nucleotide diversity), and we are using 11 subwindows, then the first 11 entries in the header line are as follows:
+
+pi_win0	pi_win1	pi_win2	pi_win3	pi_win4	pi_win5	pi_win6	pi_win7	pi_win8	pi_win9	pi_win10
+
+Again, these entries are tab-delimited. The remaining lines are the feature vectors, which give the fraction of the total value of a given summary statistic across all subwindows that is found in each subwindow. For example, if we are using 11 subwindows, and the values of pi in these 11 subwindows for a given training example are 9.5, 7.5, 6.0, 4.0, 5.5, 2.5, 4.0, 4.5, 4.0, 9.0, and 9.5, the feature vector is obtained by dividing each value by the sum of all values. The first 11 entries of this training example's line in the feature vector file would thus be as follows (tab-delimited):
+
+0.125	0.125	0.125	0.0625	0.0625	0.0	0.0625	0.0625	0.125	0.125	0.125
+
+If some satistic values are negative for a given window, then the absolute value of the smallest value is added to each statistic (making every value non-negative) prior to performing this normalization.
+
+If we are going to use 11 subwindows for our classifier, we should have a training set directory with 23 files: 11 files with feature vectors for hard sweeps whose file names end with "Hard_0.fvec", "Hard_1.fvec" and so on, all the way up to "Hard_10.fvec". The number in the file corresponds to the location of the sweep in each simulation: for the file ending with "Hard_0.fvec" the sweep occurs in the middle of the first window, for "Hard_1.fvec" if the sweep is in the middle of the second window, and so on. Similarly, there are 11 files containing feature vectors for simulated soft sweeps, whose file names end with "Soft_0.fvec", etc. Finally, there is one file with feature vectors from neutral simulations, whose name ends with "Neut.fvec". Each of these files should have the same number of feature vectors (which will be the number of lines in the file minus one, for the header). Remember, these are the files used as input for step 3 of the pipeline outlined above and described in shIC_pipeline.sh
+
+Format for the genomic summary statistic file (input to step 6):
+
+This is also a tab-delimited file. Feature vectors can then be created from this file as described in step 6 in the shIC_pipeline.sh bash script. Here is an example header line:
+
+chrom	chromStart	chromEnd	numSites	pi	segSites	thetaH	tajD	fayWuH	HapCount	H1	H12	H2/H1	Omega	ZnS
+
+The first three fields must be chrom, chromStart, and chromEnd, and the remaining entries are the names of the statistics we are using to perform classification. These statistic names must match those in the headers of training feature vector files described above, but omitting the _win<i> suffixes. The remaining lines in the file then give the values of these statistics in each genomic window. For each of these lines, the first three fields are the chromosome name, the start coordinate of the window minus one, and the end coordinate of the genomic window. Note that the start coordinate is zero-based but the end coordinate is not, in the same manner as .bed files (http://genome.ucsc.edu/FAQ/FAQformat.html#format1). The remaining fields are simply the values of each statistic in the window. From the S/HIC classifier's perspective, these values are the values of the individual subwindows that will be converted into feature vectors in the same manner as done with the training data above. This is done in step 6 using bedSummaryStatsToFeatureVec.py (again, see shIC_pipeline.sh for more detail).
+
