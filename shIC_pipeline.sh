@@ -88,6 +88,10 @@ python trainClassifier.py combinedTrainingSetsTennessenEuro/ classifiers/tenness
 # First, we have to calculate summary statistics, which can be done with pgStatsBed.
 # This step must be performed on only one chromosome (or a portion of a chromosome) at a time.
 
+#first, we have to combine the two parts of the sample population's fasta file (which was too large for github), then unzip
+cat test2LCTpop_CEU.fa.gz.partaa test2LCTpop_CEU.fa.gz.partab > test2LCTpop_CEU.fa.gz
+gunzip test2LCTpop_CEU.fa.gz
+
 # pgStatsBed calculates summary statistics in individual subwindows
 # Arguments:
 #	1) the path to the ingroup fasta file, which contains the fasta-formatted sequences of each individual
