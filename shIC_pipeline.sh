@@ -102,6 +102,8 @@ gunzip test2LCTpop_CEU.fa.gz
 #	3) the path to a bed-formatted file containing the coordinates of subwindows in which to calculate summary stats
 #		Note: the bed format specification can be found here: http://genome.ucsc.edu/FAQ/FAQformat.html#format1
 #	4) the maximum fraction of sites that can be missing from each subwindow; subwindows not meeting this criterion are skipped
+# Note: this step may take a fair amount of time and memory for large population samples/chromosomes. In such cases it would
+# be better to split the chromosome into adjacent chunks (and run in parallel on a cluster, if possible).
 ./pgStatsBed test2LCTpop_CEU.fa test2LCTanc.fa chr2_200kb_134M_140M.bed 0.25 > chr2_200kb_134M_140M_CEU.ss
 
 # STEP SIX: combine our summary statistics from individual genomic subwindows into feature vectors.
