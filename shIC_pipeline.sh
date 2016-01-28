@@ -68,8 +68,8 @@ python formatTrainingSets.py trainingSetsTennessenEuroFeatureVecs/tennessenEuroN
 # for execution of malicious code. Make sure your pickles cannot be edited by anyone else!
 # For more information on pickles and joblib, see http://scikit-learn.org/stable/modules/model_persistence.html
 # The joblib pickles can consist of many files, so it is best to save them each in their own directory, as done below.
-# Note that the formatting of pickle's may be system-dependent, so the included pickles may not work on your machine,
-# in which case you will have to generate your own as demonstrated below.
+# Note that the formatting of pickles is be system-dependent, so you may have to re-train the classifier on each machine
+# where you wish to use it.
 mkdir classifiers
 mkdir classifiers/tennessenEuro
 

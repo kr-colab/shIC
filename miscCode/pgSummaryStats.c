@@ -371,35 +371,27 @@ int numColumnsNotNedOutFromTo(struct sequenceMatrix *aSeqMat, int start, int end
         return numSites;
 }
 
-//Fay's Theta_H -- currently broken as NEED TO ADD POLARIZATION
-double thetaHPre(stringWrap** set, stringWrap** array, int size)
+//Fay's Theta_H 
+double thetaHPre(stringWrap** set, stringWrap** array,stringWrap** ancSet , int size)
 {
-	int i, j;
-	double pi, p1, n, nnm1, sum;
+	int i;
+	double  p1, n, nnm1, sum;
+	char derAllele;
 
-	pi = 0.0;
 	sum = 0.0;
 
-	for(i=0; i<size; i++)
-	{
-		if(set[i]->length > 1)
-		{
-			n = (double)(array[i]->length);
-			nnm1 = n * (n-1.0);
-			p1 = 0.0;
-			pi = 0.0;
-
-			for(j=0; j<set[i]->length; j++)
-			{
-				p1 = (double)(stringWrapCountChar(array[i], set[i]->cString[j])) / n;
-				pi += p1*p1;
-			}
-
-			sum += (2.0*pi) / nnm1;
+	for(i=0; i<size; i++){
+		if(set[i]->length == 2 && ancSet[i]->length == 1 && (set[i]->cString[0] == ancSet[i]->cString[0]  || set[i]->cString[1] == ancSet[i]->cString[0] )){
+			//find derivedAllele
+			derAllele = (ancSet[i]->cString[0] == set[i]->cString[0]) ? set[i]->cString[1] : set[i]->cString[0];
+			n = (double) array[i]->length;
+			nnm1 = n * (n - 1.0);
+			p1 = (double) stringWrapCountChar(array[i],derAllele);
+			sum += (p1*p1) / nnm1;
 		}
 	}
 
-	return sum;
+	return (2.0*sum);
 }
 //this needs an outgorup to unfold SFS. Assuming that the ancestral sequence is avail
 double thetaHFromTo(struct sequenceMatrix *aSeqMat, struct sequenceMatrix *ancMat, int start, int end){
@@ -416,7 +408,7 @@ double thetaHFromTo(struct sequenceMatrix *aSeqMat, struct sequenceMatrix *ancMa
 		sequenceMatrix_siteSetClean(aSeqMat,set,i);
 		sequenceMatrix_siteSetClean(ancMat,ancSet,i);
 		//two alleles in ingroup and ancRecon at site?
-		if(set->length == 2 && ancSet->length == 1){
+		if(set->length == 2 && ancSet->length == 1 && (set->cString[0] == ancSet->cString[0]  || set->cString[1] == ancSet->cString[0] )){
 			sequenceMatrix_siteArrayClean(aSeqMat,array,i);
 			//find derivedAllele
 			derAllele = (ancSet->cString[0] == set->cString[0]) ? set->cString[1] : set->cString[0];
@@ -486,8 +478,26 @@ void segSiteLocationsFromTo(struct sequenceMatrix *aSeqMat, vector *segs, int st
 	stringWrapFree(set);
 }
 
+//segSiteLocationsBiallelicFromTo 
+void segSiteLocationsBiallelicFromTo(struct sequenceMatrix *aSeqMat, vector *segs, int start, int end){
+	int i;
+	stringWrap *set;
+	set = stringWrapNew(aSeqMat->sampleSize + 1);
+	vectorInit(segs);
+  	for( i = start; i < end; i++){
+		sequenceMatrix_siteSetClean(aSeqMat,set,i);
+		if(set->length == 2){
+			vectorAppend(segs,(double) i);
+  		}
+	}
+	stringWrapFree(set);
+}
 void segSiteLocations(struct sequenceMatrix *aSeqMat, vector *segs){
 	segSiteLocationsFromTo(aSeqMat,segs,0,aSeqMat->length);
+}
+
+void segSiteBiallelicLocations(struct sequenceMatrix *aSeqMat, vector *segs){
+	segSiteLocationsBiallelicFromTo(aSeqMat,segs,0,aSeqMat->length);
 }
 
 double thetaWPre(stringWrap** set, int size, int samplesize)
@@ -531,6 +541,13 @@ double frequency( stringWrap *array, char aChar){
   for( i=0; i<array->length; i++) count += ( array->cString[i] == aChar ? 1.0: 0.0 ) ;
   return( count/array->length);
 }        
+
+int count( stringWrap *array, char aChar){
+	int i;
+	int count=0;
+  	for( i=0; i<array->length; i++) count += ( array->cString[i] == aChar ? 1.0: 0.0 ) ;
+  	return( count);
+}
 
 int sampleSizeCleanIndex(struct sequenceMatrix *aSeqMat, int index){
 	stringWrap *array;
