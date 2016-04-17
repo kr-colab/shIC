@@ -20,7 +20,7 @@ def processLineAndCheckPi(line, header, numSites, piCutoff):
             if pi > piCutoff:
                 goodLine = True
             newline.append(str(pi))
-        elif header[i] in ["segSites", "HapCount"]:
+        elif header[i] == "segSites":
             newline.append(str(float(line[i])/numSites))
         elif header[i] == "thetaH":
             thetaH = float(line[i])/numSites
@@ -29,8 +29,6 @@ def processLineAndCheckPi(line, header, numSites, piCutoff):
             if thetaH == False or pi == False:
                 raise Exception
             newline.append(str(thetaH-pi))
-        elif header[i] == ["tajD", "ZnS", "Omega", "H1", "H12", "H2/H1"]:
-            newline.append(line[i]) #leaving these guys as-is for now
         else:
             newline.append(line[i])
     if goodLine or pi == False:
