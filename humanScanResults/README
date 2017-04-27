@@ -1,0 +1,7 @@
+This directory contains the classification output from Schrider and Kern's (in prep) scan for selective sweeps in six human population samples using S/HIC (Schrider and Kern 2016; PMID: 26977894). Contents:
+
+windowClassifications: a directory containing the bed coordinates of the raw S/HIC output.
+
+windowClassificationsRecombFilter: a directory containing the same files as above, but filtered to remove windows with a recombination rate estimate of 0.0 from Kong et al. (2010).
+
+all_sweeps_merged.bed: a file containing the coordinates of all distinct sweeps merged across populations (as described in the paper), along with the set of populations in which the sweep was found, and the predicted type of sweep (hard or soft) for each population.
