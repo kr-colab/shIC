@@ -102,7 +102,7 @@ def processWin(currWin):
     print "\t".join(outline)
 
 currWin = linesToKeep[:numWins]
-for i in range(numWins, len(linesToKeep) - (numWins-1), 1):
+for i in range(numWins, len(linesToKeep), 1):
     processWin(currWin)
     currWin.pop(0)
     currWin.append(linesToKeep[i])
