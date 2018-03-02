@@ -1,3 +1,5 @@
+NOTE: We recommend that users switch to the newer version of S/HIC, called diploS/HIC (https://github.com/kern-lab/diploSHIC). This version handles both diploid and haploid data (as specified by the user), is a bit more user-friendly, and has a modest boost in accuracy. We will try to keep this one up and running but will invest most of our maintenance effort into diploS/HIC. Plus it's just nicer.
+
 This directory contains all of the code necessary to run the Soft/Hard Inference through Classification tool (S/HIC). Briefly, this tool uses an Extra-Trees classifier (Geurts et al. 2005: http://www.montefiore.ulg.ac.be/~ernst/uploads/news/id63/extremely-randomized-trees.pdf) to classify genomic windows as one of five different modes of evolution:
 1) Having experienced a recent hard selective sweep (i.e. positive selection resulting in the fixation of a new beneficial mutation)
 2) Being linked to a region experiencing a recent hard sweep
