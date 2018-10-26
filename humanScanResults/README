@@ -7,3 +7,5 @@ windowClassificationsRecombFilter: a directory containing the same files as abov
 all_sweeps_merged.bed: a file containing the coordinates of all distinct sweeps merged across populations (as described in the paper), along with the set of populations in which the sweep was found, and the predicted type of sweep (hard or soft) for each population.
 
 all_sweeps_merged_genes.bed: same as above but with an additional column: a comma-separated list of all genes contained within or overlapping the candidate sweep region.
+
+summaryStats.tgz: contains summary statistics calculated in each population in order to generate S/HIC's feature vectors. Note that these were calculated for chromosomal segments, and there is some overlap between these segments for making downstream feature vector calculation more convenient. Thus some windows appear in multiple files.
