@@ -88,7 +88,7 @@ sys.stderr.write("Checking accuracy when distinguishing among all %s classes\n" 
 maxMaxFeatures = len(X[0])
 param_grid_forest = {"max_depth": [3, 10, None],
               "max_features": [1, 3, int(maxMaxFeatures**0.5), maxMaxFeatures],
-              "min_samples_split": [1, 3, 10],
+              "min_samples_split": [2, 3, 10],
               "min_samples_leaf": [1, 3, 10],
               "bootstrap": [True, False],
               "criterion": ["gini", "entropy"]}
