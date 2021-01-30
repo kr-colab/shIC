@@ -1,4 +1,4 @@
-This directory contains the classification output from Schrider and Kern's (in prep) scan for selective sweeps in six human population samples using S/HIC (Schrider and Kern 2016; PMID: 26977894). Contents:
+This directory contains the classification output from Schrider and Kern's (2017; https://academic.oup.com/mbe/article/34/8/1863/3804550) scan for selective sweeps in six human population samples using S/HIC (Schrider and Kern 2016; PMID: 26977894). Contents:
 
 windowClassifications: a directory containing the bed coordinates of the raw S/HIC output.
 
@@ -9,3 +9,5 @@ all_sweeps_merged.bed: a file containing the coordinates of all distinct sweeps 
 all_sweeps_merged_genes.bed: same as above but with an additional column: a comma-separated list of all genes contained within or overlapping the candidate sweep region.
 
 summaryStats.tgz: contains summary statistics calculated in each population in order to generate S/HIC's feature vectors. Note that these were calculated for chromosomal segments, and there is some overlap between these segments for making downstream feature vector calculation more convenient. Thus some windows appear in multiple files.
+
+permuteOrderOfSweepCallRunsByChr.py: a simple python script for permuting the order of S/HIC's calls (with runs of adjacent classifications preserved). Arguments: 1) path to a BED file with S/HIC classifications, 2) the number of permutations, and 3) output directory where all permuted BED files will be written.
