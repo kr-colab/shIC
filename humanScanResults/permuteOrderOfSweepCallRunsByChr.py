@@ -96,7 +96,7 @@ def readBedCoordsAsHoLs(bedFileName):
     coordHoLs = {}
     classCountH = {}
     bedFile = open(bedFileName)
-    for line in bedFile.xreadlines():
+    for line in bedFile:
         if not (line.startswith("#") or line.startswith("track")):
             c, s, e, elementName = line.strip().split()[:4]
             elementType = elementNameToType(elementName)
